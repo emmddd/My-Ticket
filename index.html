@@ -330,7 +330,7 @@ function cardHTML(t,W,edit,selId){
   const notch=c.notch?`-webkit-mask:${m};mask:${m};`:'';
   return `<div class="tk" style="width:${r2(W)}px;height:${r2(H)}px;background:${c.bg};border-radius:${r2(c.r/100*W)}px;${notch}">`+
     t.els.map(e=>elHTML(e,W,edit,selId)).join('')+
-    `<div class="demo" style="${demoStyle(c.bg)}">Demo ticket</div>`+
+    `<div class="demo" style="${demoStyle(c.bg)}">Demo</div>`+
     (edit?'<div class="gv"></div><div class="gh"></div>':'')+`</div>`;
 }
 
