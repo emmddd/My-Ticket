@@ -11,6 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-512.png">
 <link rel="icon" href="icon-512.png">
+<meta name="app-version" content="20261101180050">
 <title>My Tickets</title>
 <style>
 /* Layout tuned for iPhone 16 Pro full screen: 402 x 874 pt (~9:19.5), Dynamic Island + home bar safe areas */
@@ -580,6 +581,20 @@ $('pass').addEventListener('touchend',e=>{if(sy0==null)return;const dy=e.changed
 // on a computer: double-click empty space = back to the lock screen
 $('pass').addEventListener('dblclick',e=>{if(!e.target.closest('#track'))setPass(false)});
 
+
+// ---- auto-update: when the app opens or comes back, load the newest version from GitHub ----
+const APP_VER=document.querySelector('meta[name=app-version]').content;
+async function checkUpdate(){
+  try{
+    const r=await fetch('./index.html?check='+Date.now(),{cache:'no-store'});if(!r.ok)return;
+    const m=/name="app-version" content="(\d+)"/.exec(await r.text());if(!m||m[1]===APP_VER)return;
+    let tried=null;try{tried=sessionStorage.getItem('updTried')}catch(e){}
+    if(tried===m[1])return;try{sessionStorage.setItem('updTried',m[1])}catch(e){}
+    location.replace('./index.html?v='+m[1]);
+  }catch(e){}
+}
+checkUpdate();
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')checkUpdate()});
 // Block pinch-zoom / double-tap zoom on iOS
 document.addEventListener('gesturestart',e=>e.preventDefault());
 
