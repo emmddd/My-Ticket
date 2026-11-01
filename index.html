@@ -15,8 +15,9 @@
 <style>
 /* Layout tuned for iPhone 16 Pro full screen: 402 x 874 pt (~9:19.5), Dynamic Island + home bar safe areas */
 :root{--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px);--u:min(calc(100vw / 402), calc(100dvh / 874), 1.15px)}
+.full{top:0!important;left:0;right:0;bottom:auto!important;height:100vh!important;height:100lvh!important}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;overscroll-behavior:none;touch-action:manipulation;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#2b3a55;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+html,body{height:100%;min-height:100vh;min-height:100lvh;overflow:hidden;overscroll-behavior:none;touch-action:manipulation;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#000;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 @font-face{font-family:"LockClock";src:url(clock.woff2) format("woff2");font-weight:500;font-display:block}
 /* ---- iPhone-style lock screen ---- */
 .lock{position:fixed;inset:0;height:100dvh;background:#140c09;color:#fff;overflow:hidden}
@@ -139,7 +140,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;touch-action:mani
 </head>
 <body>
 
-<div class="lock" id="lock">
+<div class="lock full" id="lock">
   <div class="wall" id="wall">
     <svg viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice">
       <defs>
@@ -186,7 +187,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;touch-action:mani
   </div>
 </div>
 
-<div class="pass" id="pass">
+<div class="pass full" id="pass">
   <div class="bar"><button id="done">Done</button><button id="edit">Edit</button></div>
   <div class="track" id="track"><div class="slides" id="slides"></div></div>
   <div class="dots" id="dots"></div>
@@ -218,7 +219,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;touch-action:mani
   </div>
 </div>
 
-<div class="ed" id="ed">
+<div class="ed full" id="ed">
   <div class="etop">
     <button id="edDone">Done</button>
     <button id="undo" disabled>Undo</button>
@@ -334,7 +335,7 @@ function cardHTML(t,W,edit,selId){
 }
 
 /* ---------- ticket view ---------- */
-function applyScreen(){const c=cur().card;$('pass').style.backgroundColor=c.screen;$('stack').style.display=c.stack?'':'none';$('sc4').style.backgroundColor=c.stackColor}
+function applyScreen(){const c=cur().card;if($('pass').classList.contains('open'))document.documentElement.style.background=document.body.style.background=c.screen;$('pass').style.backgroundColor=c.screen;$('stack').style.display=c.stack?'':'none';$('sc4').style.backgroundColor=c.stackColor}
 function render(){
   const tw=$('track').clientWidth||($('pass').clientWidth-32);
   $('slides').innerHTML=T.map(t=>`<div class="tkw">${cardHTML(t,tw*t.card.w/100,false)}</div>`).join('');
@@ -526,10 +527,14 @@ function goFull(){
   try{(d.requestFullscreen||d.webkitRequestFullscreen)?.call(d,{navigationUI:'hide'})}catch(e){}
 }
 
+function edgeColor(){const open=$('pass').classList.contains('open');const c=open?cur().card.screen:'#140c09';
+  document.documentElement.style.background=c;document.body.style.background=c;
+  const m=document.querySelector('meta[name=theme-color]');if(m)m.content=c}
 const setPass=v=>{
   if(v)$('stack').classList.remove('hide');
   hideFab();
   $('pass').classList.toggle('open',v);
+  edgeColor();
   if(v){goFull();if(navigator.vibrate)navigator.vibrate(12)}
 };
 $('done').onclick=()=>setPass(false);
